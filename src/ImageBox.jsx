@@ -1,34 +1,30 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect } from "react";
+import { useFetchDogImage } from "./hooks/useFetchDogImage";
+import { useManageCountBox } from "./hooks/useManageCountBox";
 export const ImageBox = () => {
-  const targetURL = "https://dog.ceo/api/breeds/image/random";
-  const [count, setCount] = useState(0);
-  const [isthree, setIsthree] = useState(false);
-  const [imageURL, setImageURL] = useState();
+  const { isLoading, imageURL, fetchDogImage } = useFetchDogImage();
+  const { count, isThree, incrementAndCheck } = useManageCountBox();
 
   useEffect(() => {
-    const fetchDogImage = async () => {
-      let data = await axios.get(targetURL);
-      setImageURL(data.data.message);
-    };
+    // console.log("--Effect");
     fetchDogImage();
-  }, [isthree]);
-
-  const onClickCount = () => {
-    setCount((prevCount) => {
-      const newCount = prevCount + 1;
-      newCount % 3 === 0 && setIsthree(!isthree);
-      return newCount;
-    });
-  };
+  }, [isThree]);
 
   return (
     <>
       <div>
         <p>{count}</p>
-        <button onClick={onClickCount}>ボタン</button>
+        <button onClick={incrementAndCheck}>ボタン</button>
       </div>
-      <img src={imageURL} style={{ width: "500px", height: "400px" }} alt="" />
+      {isLoading ? (
+        <h2>Loading....</h2>
+      ) : (
+        <img
+          src={imageURL}
+          style={{ width: "400px", height: "400px", objectFit: "cover" }}
+          alt="dog"
+        />
+      )}
     </>
   );
 };
